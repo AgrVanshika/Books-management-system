@@ -46,10 +46,10 @@ def get_book(book_id):
     else:
         return jsonify({'error': 'Book not found!'}), 404
     
-    # Endpoint to get book by its id
+# Endpoint to add a new book
 @app.route('/books', methods=['POST'])
 def add_book():
-    data = request.json()
+    data = request.json
     new_book = Book(
         title=data['title'],
         author=data['author'],
@@ -62,6 +62,33 @@ def add_book():
     db.session.commit()
     return jsonify({'message': 'New book added!', "book_id": new_book.id}), 201
 
+# Endpoint to update a new book by its id
+@app.route('/books/<int:book_id>', methods=['PUT'])
+def update_book(book_id):
+    book=Book.query.get(book_id)
+    if not book:
+        return jsonify({'message':'Book not found!'}), 404
+    data = request.json
+    book.title=data.get('title', book.title)
+    book.author=data.get('author', book.author)
+    book.original_language=data.get('original_language', book.original_language)
+    book.first_published_year=data.get('first_published_year', book.first_published_year)
+    book.sales=data.get('sales', book.sales)
+    book.genre=data.get('genre', book.genre)
+
+    db.session.commit()
+    return jsonify({'message': 'Book updated successfully'}), 200
+
+# Endpoint to delete a book
+@app.route('/books/<int:book_id>', methods=['DELETE'])
+def delete_book(book_id):
+    book = Book.query.get(book_id)
+    if not book:
+        return jsonify({'message':'Book not found'}), 404
+
+    db.session.delete(book)
+    db.session.commit()
+    return jsonify({'message': 'Book deleted successfully!'}), 204
 
 if __name__ == '__main__':
     with app.app_context():
