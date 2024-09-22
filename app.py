@@ -1,12 +1,22 @@
 from flask import Flask, jsonify, request
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///books.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
-# Sample data (in-memory database)
-books = [
-    {"id": 1, "title": "Harry Potter", "author": "J.K. Rowling", "genre": "Fantasy", "publication_date": "1997-06-26"},
-    {"id": 2, "title": "The Great Gatsby", "author": "F. Scott Fitzgerald", "genre": "Classic", "publication_date": "1925-04-10"},
-]
+class Book(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    author = db.Column(db.String(255), nullable=False)
+    original_language = db.Column(db.String(100))
+    first_published_year = db.Column(db.Integer)
+    sales = db.Column(db.Integer)
+    genre = db.Column(db.String(100))
+
+from app import db
+db.create_all()
 
 @app.route('/books', methods=['GET'])
 def get_books():
