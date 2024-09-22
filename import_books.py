@@ -9,6 +9,7 @@ with app.app_context():
     for index, row in df.iterrows():
         # Create a new book instance
         book = Book(
+            id=index + 1,
             title=row['Title'],
             author=row['Author(s)'],
             original_language=row['Original language'],
